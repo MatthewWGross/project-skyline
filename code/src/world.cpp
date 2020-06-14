@@ -75,6 +75,14 @@ namespace
             world.m_renderComponents.push_back(renderComp);
             parent->m_components.push_back(renderComp);
 
+            float randx = ((rand() % 2000) * .01f) - 10.0f;
+            float randy = 0.0f;
+            float randz = ((rand() % 2000) * .01f) - 10.0f;
+            parent->m_transform[3] = glm::vec4(randx, randy, randz, 1.0f);
+
+
+
+
             world.m_planes.push_back(parent);
         }
     }
@@ -134,7 +142,7 @@ void GameWorld::CleanupDeadRenderComponents()
     size_t renderCount = m_renderComponents.size();
     for(size_t i = 0; i < renderCount; )
     {
-        if(m_renderComponents[i]->getParent() == nullptr)
+        if(m_renderComponents[i]->GetParent() == nullptr)
         {
            delete m_renderComponents[i];
            m_renderComponents[i] = m_renderComponents[renderCount-1];

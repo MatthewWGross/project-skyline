@@ -15,11 +15,11 @@ class IGameComponent
 {
 public:
     virtual ~IGameComponent() {}
-    eGameComponentType getType() const { return m_type; } 
-    GameObject *getParent() const { return m_parent; }
-    bool isOwnedByParent() const { return m_ownedByParent; }
+    eGameComponentType GetType() const { return m_type; } 
+    GameObject *GetParent() const { return m_parent; }
+    bool IsOwnedByParent() const { return m_ownedByParent; }
 
-    virtual void onParentDestroyed() {m_parent = nullptr; } // called right before parent is destroyed
+    virtual void OnParentDestroyed() {m_parent = nullptr; } // called right before parent is destroyed
 
 protected:
     IGameComponent(eGameComponentType type, GameObject *parent)

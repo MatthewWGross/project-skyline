@@ -15,7 +15,7 @@ int main(void)
 	while (Platform::ShouldShutdown() == false)
 	{
 		Platform::UpdateInput(inputState);
-		Platform::UpdateRender();
+		Platform::UpdateRender(world.m_renderComponents);
 		double currentTime = Platform::GetTime();
 		double msToUpdate = (Platform::GetTime() * 1000) - (lastUpdateTime * 1000); // todo: get update rate and place it here
 		world.Update(msToUpdate);

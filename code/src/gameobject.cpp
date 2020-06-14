@@ -4,8 +4,8 @@ GameObject::~GameObject()
 {
     for each(IGameComponent * component in m_components)
         {
-            component->onParentDestroyed();
-            if(component->isOwnedByParent())
+            component->OnParentDestroyed();
+            if(component->IsOwnedByParent())
                 delete component;
         }
 }
