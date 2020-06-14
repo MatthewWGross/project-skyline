@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
-#include "plane.h"
-#include "airport.h"
-
+#include "planeComponent.h"
+class GameObject;
+class RenderComponent;
 class GameWorld
 {
 public:
@@ -10,10 +10,12 @@ public:
     bool Generate();
     void Update(double updateMs);
     void Reset();
+    void CleanupDeadRenderComponents();
 
-    std::vector<PlaneObject*> m_planes;
-    std::vector<AirportObject*> m_airports;
+    std::vector<GameObject *> m_planes;
+    std::vector<GameObject *> m_airports;
     std::vector<PlaneStats> m_planeTemplates;
+    std::vector<RenderComponent*> m_renderComponents;
 
     double m_timeSinceLastLog = 0;
     //TODO: Spatial partioning for objects and "GetNearby" functions

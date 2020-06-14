@@ -1,1 +1,1 @@
-START /D .. ../build/main.exe
+START /D .. ../build/skyline.exe

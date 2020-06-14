@@ -2,7 +2,7 @@
 set INCLUDE=..\code\external\include;%INCLUDE%
 set LIB=..\code\external\lib;%LIB%
 set defines=-DGLEW_STATIC -D_CONSOLE
-set commonCompilerFlags=-MD -nologo -Od -Oi -Gm- -GR- -EHsc-  -W4 -wd4201 -wd4100 -wd4189 %defines% -Z7 -FC -Fmsprout.map
+set commonCompilerFlags=-MD -nologo -Od -Oi -Gm- -GR- -EHsc-  -W4 -wd4201 -wd4100 -wd4189 %defines% -Z7 -FC -Fmsprout.map /Fe:skyline.exe
 set commonLinkerFlags= -opt:ref user32.lib Gdi32.lib shell32.lib oleaut32.lib GLEW_1130_DEBUG.lib glfw3_DEBUG.lib opengl32.lib glu32.lib /NODEFAULTLIB:MSVCRTD.lib
 REM set cppfiles=..\code\src\winplatform.cpp ..\code\src\main.cpp ..\code\src\shader.cpp ..\code\src\objloader.cpp ..\code\src\vboindexer.cpp
 set cppfiles=..\code\src\*.cpp
@@ -15,6 +15,6 @@ REM cl %commonCompilerFlags% %cppfiles% /link -subsystem:windows,5.1 %commonLink
 
 REM 64-bit build
 
-cl %commonCompilerFlags%  %cppfiles% /link %commonLinkerFlags% /IGNORE:4099
+cl %commonCompilerFlags%  %cppfiles% /link %commonLinkerFlags% /IGNORE:4099 
 
 popd

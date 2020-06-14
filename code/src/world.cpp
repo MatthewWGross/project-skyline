@@ -1,9 +1,9 @@
 
 #include "world.h"
-#include "plane.h"
-#include "airport.h"
-#include "physicsdata.h"
-#include "renderdata.h"
+#include "gameobject.h"
+#include "planecomponent.h"
+#include "airportcomponent.h"
+#include "rendercomponent.h"
 
 namespace
 {
@@ -39,14 +39,16 @@ namespace
     {
         for (int i = 0; i < 10; i++)
         {
-            AirportObject* newAirport = new AirportObject();
+            GameObject *parent = new GameObject();
+            AirportComponent *newAirport = new AirportComponent(parent);
+            parent->m_components.push_back(newAirport);
             newAirport->AIRPORTID = i + 1;
             newAirport->altitude = static_cast<float>(rand() % 2000);
             newAirport->hasFuel = true;
             newAirport->runwayLength = (rand() % 3000) + 1500;
             sprintf_s(newAirport->ICAO, 5, "K%c%c%c", getRandomRegCharacter(), getRandomRegCharacter(), getRandomRegCharacter());
 
-            world.m_airports.push_back(newAirport);
+            world.m_airports.push_back(parent);
         }
     }
 
@@ -55,14 +57,12 @@ namespace
         const PlaneStats *stats = &world.m_planeTemplates[0];
         for (int i = 0; i < 20; i++)
         {
-            PlaneObject* newPlane = new PlaneObject();
+            GameObject *parent = new GameObject();
+            PlaneComponent *newPlane = new PlaneComponent(parent);
+            parent->m_components.push_back(newPlane);
             newPlane->stats = stats;
             newPlane->activeState = e_PlaneState::PARKED;
             newPlane->currentAirport = world.m_airports[rand() % world.m_airports.size()];
-            newPlane->m_physicsData = new PhysicsData();
-            newPlane->m_renderData = new RenderData();
-            newPlane->m_renderData->pos = &newPlane->m_physicsData->pos;
-            newPlane->m_renderData->rot = &newPlane->m_physicsData->rot;
             sprintf_s(newPlane->name, 7, "N%c%c%c%c%c",
                       rand() % 9 + '1',
                       rand() % 10 + '1',
@@ -70,7 +70,12 @@ namespace
                       getRandomRegCharacter(true),
                       getRandomRegCharacter(true));
 
-            world.m_planes.push_back(newPlane);
+
+            RenderComponent* renderComp = new RenderComponent(parent);
+            world.m_renderComponents.push_back(renderComp);
+            parent->m_components.push_back(renderComp);
+
+            world.m_planes.push_back(parent);
         }
     }
 
@@ -83,19 +88,19 @@ GameWorld::~GameWorld()
 
 void GameWorld::Reset()
 {
-    for each (PlaneObject* plane in m_planes)
-    {
-        delete plane;
-    }
-
-    for each (AirportObject* airport in m_airports)
-    {
+    for each(GameObject * plane in m_planes)
+       delete plane;
+    
+    for each(GameObject * airport in m_airports)
         delete airport;
-    }
 
+    CleanupDeadRenderComponents();
     m_airports.clear();
     m_planes.clear();
     m_planeTemplates.clear();
+
+    assert(m_renderComponents.size() == 0);
+    m_renderComponents.clear();
 }
 
 bool GameWorld::Generate()
@@ -121,4 +126,24 @@ void GameWorld::Update(double updateMs)
     // Tick each plane
 
     // Tick each airport
+    CleanupDeadRenderComponents();
+}
+
+void GameWorld::CleanupDeadRenderComponents()
+{
+    size_t renderCount = m_renderComponents.size();
+    for(size_t i = 0; i < renderCount; )
+    {
+        if(m_renderComponents[i]->getParent() == nullptr)
+        {
+           delete m_renderComponents[i];
+           m_renderComponents[i] = m_renderComponents[renderCount-1];
+           renderCount--;
+           m_renderComponents.pop_back();
+        }
+        else
+        {
+            i++;
+        }
+    }
 }
