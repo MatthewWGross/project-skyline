@@ -2,6 +2,8 @@
 #include "world.h"
 #include "plane.h"
 #include "airport.h"
+#include "physicsdata.h"
+#include "renderdata.h"
 
 namespace
 {
@@ -35,22 +37,14 @@ namespace
 
     void LoadAirports(GameWorld &world)
     {
-        AirportObject KRNT;
-        KRNT.AIRPORTID = 0;
-        KRNT.altitude = 32;
-        KRNT.hasFuel = true;
-        KRNT.runwayLength = 5300;
-        sprintf_s(KRNT.ICAO, 5, "KRNT");
-        world.m_airports.push_back(KRNT);
-
         for (int i = 0; i < 10; i++)
         {
-            AirportObject newAirport;
-            newAirport.AIRPORTID = i + 1;
-            newAirport.altitude = static_cast<float>(rand() % 2000);
-            newAirport.hasFuel = true;
-            newAirport.runwayLength = (rand() % 3000) + 1500;
-            sprintf_s(newAirport.ICAO, 5, "K%c%c%c", getRandomRegCharacter(), getRandomRegCharacter(), getRandomRegCharacter());
+            AirportObject* newAirport = new AirportObject();
+            newAirport->AIRPORTID = i + 1;
+            newAirport->altitude = static_cast<float>(rand() % 2000);
+            newAirport->hasFuel = true;
+            newAirport->runwayLength = (rand() % 3000) + 1500;
+            sprintf_s(newAirport->ICAO, 5, "K%c%c%c", getRandomRegCharacter(), getRandomRegCharacter(), getRandomRegCharacter());
 
             world.m_airports.push_back(newAirport);
         }
@@ -61,11 +55,15 @@ namespace
         const PlaneStats *stats = &world.m_planeTemplates[0];
         for (int i = 0; i < 20; i++)
         {
-            PlaneObject newPlane;
-            newPlane.stats = stats;
-            newPlane.activeState = e_PlaneState::PARKED;
-            newPlane.currentAirport = &world.m_airports[rand() % world.m_airports.size()];
-            sprintf_s(newPlane.name, 7, "N%c%c%c%c%c",
+            PlaneObject* newPlane = new PlaneObject();
+            newPlane->stats = stats;
+            newPlane->activeState = e_PlaneState::PARKED;
+            newPlane->currentAirport = world.m_airports[rand() % world.m_airports.size()];
+            newPlane->m_physicsData = new PhysicsData();
+            newPlane->m_renderData = new RenderData();
+            newPlane->m_renderData->pos = &newPlane->m_physicsData->pos;
+            newPlane->m_renderData->rot = &newPlane->m_physicsData->rot;
+            sprintf_s(newPlane->name, 7, "N%c%c%c%c%c",
                       rand() % 9 + '1',
                       rand() % 10 + '1',
                       rand() % 10 + '1',
@@ -78,16 +76,31 @@ namespace
 
 } // namespace
 
-void ClearGameWorld(GameWorld &world)
+GameWorld::~GameWorld()
 {
-    world.m_airports.clear();
-    world.m_planes.clear();
-    world.m_planeTemplates.clear();
+    Reset();
+}
+
+void GameWorld::Reset()
+{
+    for each (PlaneObject* plane in m_planes)
+    {
+        delete plane;
+    }
+
+    for each (AirportObject* airport in m_airports)
+    {
+        delete airport;
+    }
+
+    m_airports.clear();
+    m_planes.clear();
+    m_planeTemplates.clear();
 }
 
 bool GameWorld::Generate()
 {
-    ClearGameWorld(*this);
+    Reset();
     LoadAirplaneTemplates(*this);
     LoadAirports(*this);
     LoadPlanes(*this);

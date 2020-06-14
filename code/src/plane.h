@@ -1,5 +1,7 @@
 #pragma once
 
+struct RenderData;
+struct PhysicsData;
 
 enum class e_EnginePropulsionType
 {
@@ -45,12 +47,14 @@ enum class e_PlaneState
     INVALID
 };
 
-struct PlaneObject
+class PlaneObject
 {
+public:
+    PlaneObject::~PlaneObject();
     const PlaneStats* stats = nullptr;
+    RenderData*  m_renderData = nullptr;
+    PhysicsData* m_physicsData = nullptr; 
     float fuel = 0.0f;
-    float xPos = 0.0f;
-    float yPos = 0.0f;
     float altitude = 0.0f;
     e_PlaneState activeState = e_PlaneState::INVALID;
     const AirportObject* currentAirport = nullptr; // only valid if parked
