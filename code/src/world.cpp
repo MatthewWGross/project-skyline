@@ -4,6 +4,8 @@
 #include "planecomponent.h"
 #include "airportcomponent.h"
 #include "rendercomponent.h"
+#include <gtc/matrix_transform.hpp>
+
 
 namespace
 {
@@ -75,13 +77,17 @@ namespace
             world.m_renderComponents.push_back(renderComp);
             parent->m_components.push_back(renderComp);
 
+            float rotx = ((rand() % 2000) * .01f) - 10.0f;
+            float roty = ((rand() % 2000) * .01f) - 10.0f;
+            float rotz = ((rand() % 2000) * .01f) - 10.0f;
+            glm::vec3 rotVec(rotx,roty,rotz);
+            rotVec = glm::normalize(rotVec);
+            parent->m_transform = glm::rotate(parent->m_transform, (rand()%628)*.01f, rotVec);
+
             float randx = ((rand() % 2000) * .01f) - 10.0f;
             float randy = 0.0f;
             float randz = ((rand() % 2000) * .01f) - 10.0f;
             parent->m_transform[3] = glm::vec4(randx, randy, randz, 1.0f);
-
-
-
 
             world.m_planes.push_back(parent);
         }

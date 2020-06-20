@@ -22,6 +22,4 @@ const glm::mat4* RenderComponent::GetTransform()
     {
         return nullptr;
     }
-    
-
 }
